@@ -1,0 +1,60 @@
+[
+    {
+        "id": 2,
+        "docoter_id": 4,
+        "studant_id": 2,
+        "created": "2023-10-20T16:51:01.000Z",
+        "updated": "2023-10-20T16:51:01.000Z",
+        "studant": {
+            "id": 2,
+            "name": "name",
+            "last_name": "last name ",
+            "title": "thr role of  storms ",
+            "pages": 13,
+            "advisors": "mostafa adil ",
+            "status": 1,
+            "created": "2023-10-20T12:48:25.000Z",
+            "updated": "2023-10-20T14:06:58.000Z"
+        },
+        "docoter": {
+            "id": 4,
+            "name": "Ahmed adil hassan",
+            "last_name": "ahmed",
+            "title": "the effect of storms",
+            "pages": 20,
+            "advisors": "Mostafa harran",
+            "status": 1,
+            "created": "2019-10-20T14:35:41.000Z",
+            "updated": "2019-10-20T14:35:52.000Z"
+        }
+    },
+    {
+        "id": 3,
+        "docoter_id": 4,
+        "studant_id": 3,
+        "created": "2023-10-20T16:51:11.000Z",
+        "updated": "2023-10-20T16:51:11.000Z",
+        "studant": {
+            "id": 3,
+            "name": "name 2",
+            "last_name": "name 3",
+            "title": "some title",
+            "pages": 11,
+            "advisors": "mostafa",
+            "status": 1,
+            "created": "2023-10-20T12:49:58.000Z",
+            "updated": "2023-10-20T14:07:04.000Z"
+        },
+        "docoter": {
+            "id": 4,
+            "name": "Ahmed adil hassan",
+            "last_name": "ahmed",
+            "title": "the effect of storms",
+            "pages": 20,
+            "advisors": "Mostafa harran",
+            "status": 1,
+            "created": "2019-10-20T14:35:41.000Z",
+            "updated": "2019-10-20T14:35:52.000Z"
+        }
+    }
+]

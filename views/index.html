@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Tree Structure</title>
+  <style>
+    .tree li {
+      display: flex;
+      align-items: center;
+      padding: 5px 0;
+      width: 100px;
+      height: auto;
+      background-color: #fff;
+      direction: vertical;
+    }
+    
+   
+    .tree li::before {
+      content: "";
+      width: 0;
+      height: 100px;
+      border-top-width: 10px;
+      border-right-width: 10px;
+      border-bottom-width: 10px;
+      border-left-width: 0;
+      border-style: solid;
+      border-color: #ccc;
+      margin-right: 5px;
+      flex-direction: column;
+
+    }
+  </style>
+</head>
+
+<body>
+  <div id="tree-container"></div>
+
+
+  <script>
+    const data = {
+      name: "Root",
+      children: [
+        {
+          name: "Child 1",
+          children: [
+            {
+              name: "Grandchild 1",
+            },
+            {
+              name: "Grandchild 2",
+            },
+            {
+              name: "Grandchild 2",
+            },
+             {
+              name: "Grandchild 2",
+            },
+          ],
+        },
+        {
+          name: "Child 2",
+          children: [
+            {
+              name: "Grandchild 3",
+            },
+            {
+              name: "Grandchild 4",
+            },
+          ],
+        },
+      ],
+    };
+
+    const renderTree = (data, container) => {
+      const ul = document.createElement("ul");
+      ul.classList.add("tree");
+
+      const li = document.createElement("li");
+      li.textContent = data.name;
+
+      if (data.children) {
+        const ulChildren = document.createElement("ul");
+        ulChildren.classList.add("children");
+
+        data.children.forEach((child) => {
+          const liChild = document.createElement("li");
+          liChild.textContent = child.name;
+
+          renderTree(child, liChild);
+
+          ulChildren.appendChild(liChild);
+        });
+
+        li.appendChild(ulChildren);
+      }
+
+      ul.appendChild(li);
+
+      container.appendChild(ul);
+    };
+
+    renderTree(data, document.getElementById("tree-container"));
+  </script>
+</body>
+
+</html>
