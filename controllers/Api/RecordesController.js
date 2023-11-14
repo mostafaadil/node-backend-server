@@ -72,13 +72,20 @@ exports.search = async (req, res, next) => {
 }
 
 exports.advanceSearch = async (req, res, next) => {
+  console.log("75", req.body.page)
+  if (req.body.page == null) {
+    req.body.page = 1
+  }
   var search = req.body.col
-  const result=await sequelize.query(`SELECT *,unvarsecites.name as un FROM recordes,unvarsecites where title like '%${search}%' and unvarsecites.id=recordes.unvrecity_id;;`)
+  var offset = (req.body.page - 1) * req.body.limit
+  const result = await sequelize.query(`SELECT *,unvarsecites.name as un FROM recordes,unvarsecites where title like '%${search}%' and unvarsecites.id=recordes.unvrecity_id limit ${req.body.limit} offset ${offset}`)
+  const data = await sequelize.query(`SELECT *,unvarsecites.name as un FROM recordes,unvarsecites where title like '%${search}%' and unvarsecites.id=recordes.unvrecity_id`)
+
   if (result)
-      res.status(200).json({ status: true, data: result[0] })
-    else {
-      res.status(200).json({ status: false, message: `No data founded` })
-    }
+    res.status(200).json({ status: true, data: result[0], tot: data[0]?.length })
+  else {
+    res.status(200).json({ status: false, message: `No data founded` })
+  }
 }
 //@decs   Get All 
 //@route  GET
@@ -107,7 +114,7 @@ exports.updateRecordStatus = async (req, res, next) => {
     if (data.status == 0) {
       status = 1
     }
-    var result = await conn.recordes.update( {status:status} , { where: { id: req.body.id } })
+    var result = await conn.recordes.update({ status: status }, { where: { id: req.body.id } })
     if (result) {
       res.status(200).json({ status: true, data: status })
     }
@@ -120,11 +127,32 @@ exports.updateRecordStatus = async (req, res, next) => {
     res.status(200).json({ status: false, message: `server side error` })
   }
 }
+
+
+exports.top25Records = async (req, res, next) => {
+  const result = await sequelize.query(`SELECT
+  rs.name AS name,
+  rs.last_name as name1,
+  rs.id AS id,
+  "review-01.jpg" as  img,
+  COUNT(recored_studants.id) AS point
+FROM recordes
+INNER JOIN recored_studants ON recored_studants.docoter_id = recordes.id
+LEFT JOIN recordes AS rs ON rs.id = recored_studants.docoter_id
+GROUP BY rs.id
+ORDER BY (SELECT count(id) from recored_studants where recordes.id=recored_studants.docoter_id) DESC LIMIT 25;`)
+  if (result[0]) {
+    res.status(200).json({ status: true, data: result[0] })
+  }
+  else {
+    res.status(200).json({ status: false, message: `No data founded` })
+  }
+}
 exports.createRecordes = async (req, res, next) => {
   try {
     const result = await conn.recordes.create(req.body)
     if (result) {
-      await conn.records_log.create({record_id:result.id,poster_id:req.body.user_id})
+      await conn.records_log.create({ record_id: result.id, poster_id: req.body.user_id })
       res.status(200).json({ status: true, data: req.body })
     }
     else {
@@ -132,7 +160,8 @@ exports.createRecordes = async (req, res, next) => {
     }
   }
   catch (e) {
-    res.status(200).json({ status: false, message: `server side error` })
+    console.log(e);
+    res.status(200).json({ status: false, message: `server side error`, err: { e } })
   }
 
 
@@ -141,10 +170,42 @@ exports.createRecordes = async (req, res, next) => {
 exports.paginate = async (req, res, next) => {
   try {
     var offset = (req.body.page - 1) * req.body.limit
+
     console.log("the offset", offset, "the limit is ", req.body.limit);
     var result = await conn.recordes.findAll({
       order: [["id", "DESC"]],
-      include: ['recored_studants', 'recored_studants',"unvrecity"],
+      include: ['recored_studants', 'recored_studants', "unvrecity"],
+      offset: offset,
+      limit: req.body.limit,
+      subQuery: false,
+    })
+    console.log("the len is", result.length)
+    if (result) {
+      var count = await conn.recordes.findAll();
+      res.status(200).json({ status: true, data: result, tot: count.length })
+    }
+    else {
+      res.status(200).json({ status: false, message: `No data founded` })
+    }
+  }
+  catch (e) {
+    console.log(e)
+    res.status(200).json({ status: false, message: `server side error` })
+  }
+}
+
+
+exports.paginateDataForPoster = async (req, res, next) => {
+  try {
+    var offset = (req.body.page - 1) * req.body.limit
+
+    console.log("the offset", offset, "the limit is ", req.body.limit);
+    var result = await conn.recordes.findAll({
+      where:
+        { poster_id: req.body.id, }
+      ,
+      order: [["id", "DESC"]],
+      include: ['recored_studants', 'recored_studants', "unvrecity"],
       offset: offset,
       limit: req.body.limit,
       subQuery: false,

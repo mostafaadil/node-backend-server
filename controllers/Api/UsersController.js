@@ -12,9 +12,12 @@ exports.createUsers = async (req, res, next) => {
       var info = { name: req.body.name, email: req.body.email, pass: hash, type: req.body.type }
       console.log(info)
       isInserted = await conn.users.create(info)
-      if (isInserted)
+      if (isInserted) {
+        req.body.id = isInserted.id
+
         res.status(200).json({ status: true, data: req.body })
-      else {
+
+      } else {
         res.status(200).json({ status: false, message: "filed to save data" })
       }
     })
@@ -23,36 +26,36 @@ exports.createUsers = async (req, res, next) => {
 
 
 exports.dashboard = async (req, res, next) => {
- const result=await sequelize.query(`SELECT count(awards.id) as awards,count(countries.id) as countries,count(recordes.id) as records,(SELECT count(users.id) FROM users where type="poster") as posters FROM awards,countries,recordes;`)
- if (result[0]) {
-  res.status(200).json({ status: true, data: result[0][0], })
-}
-else {
-  res.status(200).json({ status: false, message: "No data founded", })
-}
+  const result = await sequelize.query(`SELECT count(awards.name) as awards,count(countries.id) as countries,count(recordes.id) as records,(SELECT count(users.id) FROM users where type="poster") as posters FROM awards,countries,recordes;`)
+  if (result[0]) {
+    res.status(200).json({ status: true, data: result[0][0], })
+  }
+  else {
+    res.status(200).json({ status: false, message: "No data founded", })
+  }
 }
 
 
 exports.PosterDashboard = async (req, res, next) => {
-  const result=await sequelize.query(`SELECT count(poster_awareds.id) as awards,  count(records_log.id) as records FROM poster_awareds,records_log where poster_awareds.poster_id=${req.body.id} and records_log.poster_id=${req.body.id};`)
+  const result = await sequelize.query(`SELECT count(poster_awareds.id) as awards,  count(records_log.id) as records FROM poster_awareds,records_log where poster_awareds.poster_id=${req.body.id} and records_log.poster_id=${req.body.id};`)
   if (result[0]) {
-   res.status(200).json({ status: true, data: result[0][0], })
- }
- else {
-   res.status(200).json({ status: false, message: "No data founded", })
- }
- }
- 
+    res.status(200).json({ status: true, data: result[0][0], })
+  }
+  else {
+    res.status(200).json({ status: false, message: "No data founded", })
+  }
+}
+
 exports.login = async (req, res) => {
 
-  data=req.body
-  console.log("-------------------",data);
+  data = req.body
+  console.log("-------------------", data);
 
-  var user = await conn.users.findOne({ where: { name: data.user.name }})
+  var user = await conn.users.findOne({ where: { name: data.user.name } })
   if (user) {
     console.log("valied user")
     bcrypt.compare(data.user.pass, user.pass, async function (err, resp) {
-    
+
       if (resp) {
         delete user.pass
         console.log("the user data is *********", user)
@@ -162,7 +165,7 @@ exports.paginate = async (req, res, next) => {
     var result = await conn.users.findAll({
       order: [["id", "DESC"]],
       offset: offset,
-      include:["country"],
+      include: ["country"],
       where: { "type": req.body.type.toString().toLowerCase() },
       limit: req.body.limit,
       subQuery: false,

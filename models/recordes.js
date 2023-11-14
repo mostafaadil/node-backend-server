@@ -11,6 +11,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(255),
       allowNull: true
     },
+    poster_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    mid_name: {
+      type: DataTypes.STRING(200),
+      allowNull: true
+    },
     year: {
       type: DataTypes.STRING(250),
       allowNull: true

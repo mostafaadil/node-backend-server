@@ -74,7 +74,7 @@ exports.search = async (req, res, next) => {
 //@route  GET
 //@access Public
 async function looper(doc_id) {
-  var tree=[]
+  var tree = []
   let result = await conn.recored_studants({
     include: ["studant", "docoter"],
     where: {
@@ -83,25 +83,35 @@ async function looper(doc_id) {
   })
   if (result) {
     result.forEach(async (row) => {
-       row.push({id:row.id,name:row.name,link:"google.com"})
+      row.push({ id: row.id, name: row.name, link: "google.com" })
     })
   }
 }
+
+createThree = async (id) => {
+  console.log(id)
+  data = []
+  res = await conn.recordes.findOne({ where: { id: id }, include: ['recored_studants'] });
+  data.push(res)
+  res?.recored_studants?.forEach(async(element) => {
+    await data.push(createThree(element?.id))
+  });
+  return data
+}
+
 exports.getRecoredStudants = async (req, res, next) => {
   try {
-    const result = await sequelize.query(`SELECT recordes.name, JSON_ARRAY( JSON_OBJECT('id', recored_studants.id, 'name', std.title)) AS recored_studants
-    FROM recordes
-    LEFT JOIN recored_studants ON recored_studants.docoter_id = recordes.id
-    JOIN recordes as std on std.id= recored_studants.studant_id
-    GROUP BY recordes.id;
-    `)
-    
-    res.status(200).json({ status: true, data: result[0] })
-    
-   
+    let data = []
+    const result = await conn.recordes.findAll({ where: { id: req.query.id } ,include: ['recored_studants'] })
+     data.push(result.map(async(ele) => {
+      return await createThree(ele.id)
+    }))
+    console.log(data)
+    res.status(200).json({ status: true, data: data })
   }
   catch (e) {
-    res.status(200).json({ status: false, message: `server side error` })
+    console.log(e)
+    res.status(200).json({ status: false, message: `server side error`, err: { e } })
   }
 
 }
