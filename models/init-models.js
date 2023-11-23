@@ -32,6 +32,8 @@ function initModels(sequelize) {
   countries.hasMany(unvarsecites, { as: "unvarsecites", foreignKey: "country_id"});
   users.belongsTo(countries, { as: "country", foreignKey: "country_id"});
   countries.hasMany(users, { as: "users", foreignKey: "country_id"});
+  recordes.belongsTo(recordes, { as: "advisors_recorde", foreignKey: "advisors"});
+  recordes.hasMany(recordes, { as: "recordes", foreignKey: "advisors"});
   records_log.belongsTo(recordes, { as: "record", foreignKey: "record_id"});
   recordes.hasMany(records_log, { as: "records_logs", foreignKey: "record_id"});
   recored_studants.belongsTo(recordes, { as: "docoter", foreignKey: "docoter_id"});

@@ -48,8 +48,12 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true
     },
     advisors: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'recordes',
+        key: 'id'
+      }
     },
     status: {
       type: DataTypes.INTEGER,
@@ -65,6 +69,10 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: Sequelize.Sequelize.fn('current_timestamp')
+    },
+    poster: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     }
   }, {
     sequelize,
@@ -84,6 +92,20 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "unvrecity_id" },
+        ]
+      },
+      {
+        name: "poster",
+        using: "BTREE",
+        fields: [
+          { name: "poster" },
+        ]
+      },
+      {
+        name: "advisors",
+        using: "BTREE",
+        fields: [
+          { name: "advisors" },
         ]
       },
     ]
